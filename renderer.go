@@ -41,10 +41,13 @@ func (r *renderer) Layout(size fyne.Size) {
 	var totalFlexes float32
 
 	for _, item := range r.container.Items {
+		main, cross := r.unmarshalSize(item.MinSize())
 		if item.flex != 0 {
 			totalFlexes += float32(item.flex)
 		} else {
-			main, cross := r.unmarshalSize(item.MinSize())
+			if item.mainSize != 0 {
+				main = item.mainSize
+			}
 			item.Resize(r.marshalSize(main, cross))
 			mainAxisSizedElementsTotalSizes += main
 		}
