@@ -1,6 +1,9 @@
 package flynex
 
 import (
+	"fmt"
+	"os"
+
 	fyne "fyne.io/fyne/v2"
 )
 
@@ -36,7 +39,14 @@ func (r *renderer) marshalSize(main, cross float32) fyne.Size {
 	return fyne.NewSize(main, cross)
 }
 
+func (r *renderer) debugPrintf(tpl string, a ...interface{}) {
+	if r.container.debug {
+		_, _ = fmt.Fprintf(os.Stderr, "flynex: "+tpl, a...)
+	}
+}
+
 func (r *renderer) Layout(size fyne.Size) {
+	r.debugPrintf("start layout, width: %.1f, height %.1f\n", size.Width, size.Height)
 	var mainAxisSizedElementsTotalSizes float32
 	var totalFlexes float32
 
@@ -145,6 +155,11 @@ func (r *renderer) Layout(size fyne.Size) {
 			item.Resize(r.marshalSize(mainSize, maxCrossSize))
 		}
 	}
+
+	for _, item := range r.container.Items {
+		r.debugPrintf("item %.1f x %.1f @ (%.1f, %.1f)\n", item.Size().Width, item.Size().Height, item.Position().X, item.Position().Y)
+	}
+	r.debugPrintf("end layout, main sizes: %.1f, flexes: %.1f\n", mainAxisSizedElementsTotalSizes, totalFlexes)
 }
 
 func (r *renderer) MinSize() fyne.Size {

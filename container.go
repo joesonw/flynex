@@ -29,6 +29,7 @@ type Container struct {
 	grow      bool
 	alignment string
 	justify   string
+	debug     bool
 }
 
 func NewRowContainer(items ...*FlexItem) *Container {
@@ -50,9 +51,31 @@ func newContainer(column bool, items []*FlexItem) *Container {
 	return c
 }
 
+func (c *Container) Debug() *Container {
+	c.debug = true
+	return c
+}
+
 func (c *Container) Add(item *FlexItem) *Container {
 	c.Items = append(c.Items, item)
 	c.Refresh()
+	return c
+}
+
+func (c *Container) Remove(item *FlexItem) *Container {
+	for index := range c.Items {
+		if c.Items[index] == item {
+			return c.RemoveAt(index)
+		}
+	}
+	return c
+}
+
+func (c *Container) RemoveAt(index int) *Container {
+	if len(c.Items) > index {
+		c.Items = append(c.Items[:index], c.Items[index+1:]...)
+		c.Refresh()
+	}
 	return c
 }
 
